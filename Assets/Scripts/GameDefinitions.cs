@@ -3,32 +3,55 @@ using Monogum.BricksBucket.Core;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Game
+namespace BoardGame
 {
     public static class GameDefinitions
     {
-        
 
+        public const int MinPlayers = 2;
         public const int MaxPlayers = 6;
+        public const int MinWorkersPerPlayer = 1;
         public const int MaxWorkersPerPlayer = 6;
 
-        
+        public const int InitialBudget = 12;
 
         #region Venues
+
+        public const int VenuesSlots = 3;
         
-        public const int VenuesOnBoard = 3;
         public const int VenuesDeckCount = 20;
 
         public static readonly Vector2Int VenuesBonusRange = 
-            new Vector2Int(1, 3);
+            new(1, 3);
         
         public static readonly Venue[] VenuesLevels = 
         {
-            new Venue {Cost = 1, Service = 1},
-            new Venue {Cost = 2, Service = 1},
-            new Venue {Cost = 4, Service = 2},
-            new Venue {Cost = 8, Service = 2},
-            new Venue {Cost = 16, Service = 3}
+            new() {Cost = 1, Service = 1},
+            new() {Cost = 2, Service = 1},
+            new() {Cost = 4, Service = 2},
+            new() {Cost = 8, Service = 2},
+            new() {Cost = 16, Service = 3}
+        };
+
+        #endregion
+
+        #region Talent
+
+        public static readonly int[] TalentSlots =
+        {
+            2, 
+            3, 
+            2
+        };
+        
+        public const int TalentDeckCount = 20;
+        public const int TalentPerPlayer = 3;
+        
+        public static readonly Talent[] TalentLevels =
+        {
+            new () {Cost = 3, Interest = 1},
+            new () {Cost = 6, Interest = 2},
+            new () {Cost = 9, Interest = 3}
         };
 
         #endregion
@@ -36,7 +59,7 @@ namespace Game
         
         
         
-        public const int AttendantsToMoney = 2;
+        public const int MoneyPerEachAttendant = 2;
 
         public static Season CurrentSeason;
 

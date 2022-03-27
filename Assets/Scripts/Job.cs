@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Game
+namespace BoardGame
 {
     public abstract class Job
     {
@@ -9,18 +9,29 @@ namespace Game
         protected abstract int PlacesQuota { get;  }
         protected abstract int PlacesPerPlayerQuota { get; }
 
-        public Dictionary<Player, Stack<Worker>> Quota 
-            = new Dictionary<Player, Stack<Worker>>();
+        public Dictionary<Player, Stack<Worker>> Quota = new();
 
         private int WorkersCount 
             => Quota.Keys.Sum(player => Quota[player].Count);
+        
+        private int ActivePlayersCount => Quota.Keys.Count(registeredPlayer => 
+            Quota[registeredPlayer].Count > 0);
 
-        public virtual bool CanBeEmployee(Player player) => 
-            WorkersCount < PlacesQuota && (
-                Quota.ContainsKey(player) 
-                    ? Quota[player].Count < PlacesPerPlayerQuota
-                    : Quota.Count < PlayersQuota
-                );
+        public bool HasVacancy(Player player)
+        {
+            if (WorkersCount >= PlacesQuota)
+            {
+                return false;
+            }
+            
+            if (ActivePlayersCount >= PlayersQuota)
+            {
+                return false;
+            }
+
+            return !Quota.ContainsKey(player) 
+                   || Quota[player].Count < PlacesPerPlayerQuota;
+        }
 
         public int GetWorkers(Player player)
         {
@@ -32,39 +43,54 @@ namespace Game
             return Quota[player].Count;
         }
         
-        public void PlaceWorkers(Player player, int workersToPlace)
+        public void PlaceWorker(Player player)
         {
             if (player.Workers.Count == 0) { return; }
-            if (!CanBeEmployee(player)) { return; }
-            if (workersToPlace > player.Workers.Count)
-            {
-                workersToPlace = player.Workers.Count;
-            }
+            if (!HasVacancy(player)) { return; }
 
-            Quota[player] ??= new Stack<Worker>(); 
-            for (var i = 0; i < workersToPlace; i++)
-            {
-                ChargePerWorker(player); 
-                Quota[player].Push(player.Workers.Pop());
-            }
-            ChargePerPlayer(player);
+            Quota[player] ??= new Stack<Worker>();
+            Quota[player].Push(player.Workers.Pop());
         }
 
         public void RecollectWorkers(Player player)
         {
-            if (!Quota.ContainsKey(player)) { return; }
+            if (!Quota.ContainsKey(player))
+            {
+                Quota[player] = new Stack<Worker>();
+                return;
+            }
+            
+            if(Quota[player].Count == 0)
+            {
+                return;
+            }
 
-            Quota[player] ??= new Stack<Worker>();
+            if (!CanBeChargedPerPlayer(player))
+            {
+                foreach (var worker in Quota[player])
+                {
+                    player.Workers.Push(worker);
+                }
+                Quota[player].Clear();
+                return;
+            }
+            
+            ChargePerPlayer(player);
             foreach (var worker in Quota[player])
             {
                 player.Workers.Push(worker);
+                if (!CanBeChargedPerWorker(player)) { continue; }
+                ChargePerWorker(player);
                 PaybackPerWorker(player);
             }
-            Quota[player].Clear();
             PaybackPerPlayer(player);
+            
+            Quota[player].Clear();
         }
         
         public abstract void Prepare();
+        protected abstract bool CanBeChargedPerPlayer(Player player);
+        protected abstract bool CanBeChargedPerWorker(Player player);
         protected abstract void ChargePerPlayer(Player player);
         protected abstract void ChargePerWorker(Player player);
         protected abstract void PaybackPerWorker(Player player);

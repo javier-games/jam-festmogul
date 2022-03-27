@@ -1,4 +1,4 @@
-namespace Game
+namespace BoardGame
 {
     public class Worker
     {
