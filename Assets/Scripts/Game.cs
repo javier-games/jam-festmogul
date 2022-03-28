@@ -1,12 +1,14 @@
-
+using System.Collections;
 using System.Collections.Generic;
 using Monogum.BricksBucket.Core;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace BoardGame
 {
-    public class Game
+    public class Game : MonoBehaviour
     {
+        [SerializeField] private float delay;
 
         internal static readonly Deck<Venue> VenuesDeck = new(
             Venue.GetRandomVenue,
@@ -21,10 +23,42 @@ namespace BoardGame
 
         private static readonly List<Job> Jobs = new();
         private static readonly List<Player> Players = new();
-        private static int firstPlayer = 0;
+        private static int _firstPlayer;
+        private static Season _firstSeason;
+        public static Season CurrentSeason;
+        private static int _yearsCount;
 
-        public void SetUp()
+        public IEnumerator Start()
         {
+            SetUp();
+            var i = 0;
+            while (true)
+            {
+                Debug.Log($"{i} -------");
+                yield return new WaitForSeconds(delay);
+            
+                Round();
+            
+                Debug.Log($"Year {_yearsCount} - Season {CurrentSeason}");
+                foreach (var player in Players)
+                {
+                    Debug.Log(player);
+                }
+
+                i++;
+            }
+        }
+
+
+        private static void SetUp()
+        {
+            // Seasons.
+            
+            _firstSeason = (Season) Random.Range(0, 4);
+            CurrentSeason = _firstSeason;
+            
+            // Players Setup. 
+            
             Players.Clear();
             var playersCount = Random.Range(
                 GameDefinitions.MinPlayers,
@@ -35,8 +69,10 @@ namespace BoardGame
             {
                 Players.Add(new Player());
             }
-            firstPlayer = Random.Range(0, Players.Count);
+            _firstPlayer = Random.Range(0, Players.Count);
 
+            // Jobs
+            
             Jobs.Clear();
             for (var i = 0; i < GameDefinitions.VenuesSlots; i++)
             {
@@ -50,11 +86,17 @@ namespace BoardGame
                     Jobs.Add(new TalentAcquisition(i));
                 }
             }
+            
+            Jobs.Add(new Marketing());
+            Jobs.Add(new HumanResources());
+            Jobs.Add(new InvestmentAcquisition());
         }
 
-
-        public Game()
+        private static void Round()
         {
+            // Check year.
+            if (CurrentSeason == _firstSeason) { _yearsCount++; }
+            
             // Prepare.
             foreach (var job in Jobs)
             {
@@ -62,22 +104,26 @@ namespace BoardGame
             }
             
             // Place workers.
-            var playerOnTurn = firstPlayer;
+            var playerOnTurn = _firstPlayer;
             for (var i = 0; i < Players.Count; i++)
             {
                 var player = Players[playerOnTurn];
-                while (player.Workers.Count > 0)
+                var shuffleList = Jobs.GetSample(Jobs.Count, true);
+                for (var j = 0; j < shuffleList.Length && player.WorkersCount != 0 ; j++)
                 {
-                    var jobIndex = Random.Range(0, Jobs.Count);
-                    if (Jobs[jobIndex].HasVacancy(player))
-                    {
-                        Jobs[jobIndex].PlaceWorker(player);
+                    var job = shuffleList[j];
+                    if (job.HasVacancy(player)) 
+                    { 
+                        job.PlaceWorker(player);
                     }
                 }
-                playerOnTurn.Loop(0, Players.Count - 1);
+
+                playerOnTurn++;
+                CheckIndex(ref playerOnTurn, 0, Players.Count -1);
             }
             
             // Recollect
+            playerOnTurn = _firstPlayer;
             for (var i = 0; i < Players.Count; i++)
             {
                 var player = Players[playerOnTurn];
@@ -85,18 +131,32 @@ namespace BoardGame
                 {
                     job.RecollectWorkers(player);
                 }
-                playerOnTurn.Loop(0, Players.Count - 1);
+                //player.PayWorkers();
+                
+                playerOnTurn++;
+                CheckIndex(ref playerOnTurn, 0,  Players.Count -1);
             }
 
-            firstPlayer.Loop(0, Players.Count, -1);
-            GameDefinitions.NextSeason();
-        }
-
-        public void Round()
-        {
+            _firstPlayer--;
+            CheckIndex(ref _firstPlayer, 0, Players.Count -1);
             
+            var currentSeason = (int) CurrentSeason;
+            currentSeason++;
+            CheckIndex(ref currentSeason, 0, 3);
+            CurrentSeason = (Season) currentSeason;
         }
-        
 
+        private static void CheckIndex(ref int index, int min, int max)
+        {
+            if (index < 0)
+            {
+                index = max;
+            }
+
+            if (index > max)
+            {
+                index = min;
+            }
+        }
     }
 }

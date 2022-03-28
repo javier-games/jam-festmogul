@@ -1,4 +1,3 @@
-    using UnityEngine;
 namespace BoardGame
 {
     public class Talent
@@ -9,16 +8,17 @@ namespace BoardGame
         
         public static Talent GetRandomTalent()
         {
+            var random = new System.Random();
             var maxLevel = GameDefinitions.TalentLevels.Length;
-            var level = Random.Range(0, maxLevel);
+            var level =  random.Next(maxLevel - 1);
             var min = GameDefinitions.TalentLevels[level];
             var max = GameDefinitions.TalentLevels[level + 1];
             
             var talent = new Talent
             {
                 Level = level,
-                Cost = Random.Range(min.Cost, max.Cost),
-                Interest = Random.Range(min.Interest, max.Interest)
+                Cost = random.Next(min.Cost, max.Cost),
+                Interest = random.Next(min.Interest, max.Interest)
             };
 
             return talent;

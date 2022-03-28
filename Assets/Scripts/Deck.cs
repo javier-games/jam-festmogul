@@ -60,7 +60,12 @@ namespace BoardGame
                 _draw.Add(_deck.Dequeue());
             }
             
-            _draw.Shuffle();
+            var random = new System.Random();
+            for (int i = 0; i < _draw.Count; i++)
+            {
+                var r = random.Next(0, i);
+                _draw.Swap (i, r);
+            }
             if (_sortMethod != null)
             {
                 _draw.Sort(_sortMethod);

@@ -1,7 +1,4 @@
-using System;
-using Monogum.BricksBucket.Core;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace BoardGame
 {
@@ -12,8 +9,8 @@ namespace BoardGame
         public const int MaxPlayers = 6;
         public const int MinWorkersPerPlayer = 1;
         public const int MaxWorkersPerPlayer = 6;
-
         public const int InitialBudget = 12;
+        public const int MaxViews = 6;
 
         #region Venues
 
@@ -55,32 +52,35 @@ namespace BoardGame
         };
 
         #endregion
+
+        #region Marketing
+
+        public const int MarketingPlayersQuota = 2;
+        public const int MarketingPlacesQuota = 2;
+        public const int MarketingPlacesPerPlayerQuota = 1;
+        public const int MarketingCost = 2;
+        public const int MarketingPayback = 1;
+
+        #endregion
+
+        #region Inverstments
+
+        public const int InvestmentPlayersQuota  = MaxPlayers;
+        public const int InvestmentPlacesQuota  = MaxWorkersPerPlayer * MaxPlayers;
+        public const int InvestmentPlacesPerPlayerQuota = MaxWorkersPerPlayer;
+        public const int InvestmentPayback = 5;
+
+        #endregion
+
+        #region Human Resources
         
-        
-        
-        
+        public const int HumanResourcesPlayersQuota  = 1;
+        public const int HumanResourcesPlacesQuota  = 1;
+        public const int HumanResourcesPlacesPerPlayerQuota = 1;
+
+        #endregion
+
+        public const int CostPerWorker = 1;
         public const int MoneyPerEachAttendant = 2;
-
-        public static Season CurrentSeason;
-
-        static GameDefinitions()
-        {
-            var seasonCount = Enum.GetValues(typeof(Season)).Length;
-            CurrentSeason = (Season) Random.Range(0, seasonCount);
-        }
-
-        public static void NextSeason()
-        {
-            var seasonCount = Enum.GetValues(typeof(Season)).Length;
-            var currentSeason = (int) CurrentSeason;
-            currentSeason.Loop(0, seasonCount);
-            CurrentSeason = (Season) currentSeason;
-        }
-
-        public static bool MakeTest(int threshold)
-        {
-            return Random.Range(1, 7) <= threshold;
-        }
-
     }
 }
