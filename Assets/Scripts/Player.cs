@@ -7,17 +7,15 @@ namespace BoardGame
     public class Player
     {
         private Stack<Worker> Workers { get; } = new();
-        private List<Worker> Worker { get; } = new List<Worker>();
-
+        private List<Worker> WorkersRegistry { get; } = new List<Worker>();
         private Stack<Talent> Lineup { get; } = new();
 
-        public int Butget;
-        public int Trust;
+        public int Budget { get; private set; }
+        public int Trust { get; private set; }
         public int Views { get; private set; }
-        public int WorkersCount => Worker.Count;
-        public int CurrentWorkerCount => Workers.Count;
+        public int WorkersAmount => Workers.Count;
 
-        private Color _color;
+        private readonly Color _color;
 
         public int Interest
         {
@@ -27,8 +25,7 @@ namespace BoardGame
                 foreach (var talent in Lineup)
                 {
                     if(talent == null) { continue; }
-
-                    interest += talent.Interest;
+                    interest += talent.interest;
                 }
 
                 return interest;
@@ -38,7 +35,7 @@ namespace BoardGame
         public Player()
         {
             _color = Color.HSVToRGB(Random.value, 1, 1);
-            Butget = GameDefinitions.InitialBudget;
+            Budget = GameDefinitions.InitialBudget;
             for (var i = 0; i < GameDefinitions.MinWorkersPerPlayer; i++)
             {
                 AddWorker();
@@ -50,26 +47,19 @@ namespace BoardGame
         public void ClearViews() => Views = 0;
 
         public bool CanAcquireWorker() =>
-            WorkersCount < GameDefinitions.MaxWorkersPerPlayer;
+            WorkersRegistry.Count < GameDefinitions.MaxWorkersPerPlayer;
 
         public void AddWorker()
         {
-            if (CanAcquireWorker())
-            {
-                var worker = new Worker();
-                Workers.Push(worker);
-                Worker.Add(worker);
-                //WorkersCount++;
-            }
+            if (!CanAcquireWorker()) return;
+            var worker = new Worker();
+            Workers.Push(worker);
+            WorkersRegistry.Add(worker);
         }
 
         public Worker GetWorker()
         {
-            if (Workers.Count == 0)
-            {
-                return null;
-            }
-            return Workers.Pop();
+            return Workers.Count == 0 ? null : Workers.Pop();
         }
 
         public void ReturnWorker(Worker worker)
@@ -93,21 +83,40 @@ namespace BoardGame
 
         public void PayWorkers()
         {
-            var total = WorkersCount * GameDefinitions.CostPerWorker;
-            while (total > Butget)
+            var total = WorkersRegistry.Count * GameDefinitions.CostPerWorker;
+            while (total > Budget)
             {
-                if (WorkersCount <= GameDefinitions.MinWorkersPerPlayer)
+                if (WorkersRegistry.Count <= GameDefinitions.MinWorkersPerPlayer)
                 {
                     // Working for free.
                     return;
                 }
                 var workerToDelete = Workers.Pop();
-                Worker.Remove(workerToDelete);
-                total = WorkersCount * GameDefinitions.CostPerWorker;
+                WorkersRegistry.Remove(workerToDelete);
+                total = WorkersRegistry.Count * GameDefinitions.CostPerWorker;
             }
-            Butget-= total;
+            Budget-= total;
         }
 
+        public void IncreaseTrust(int trust)
+        {
+            Trust += trust;
+        }
+
+        public void Receive(uint amount)
+        {
+            Budget += (int) amount;
+        }
+
+        public void Pay(uint cost)
+        {
+            Budget -= (int) cost;
+            if (Budget < 0)
+            {
+                Debug.LogWarning("Can not pay.");
+                Budget = 0;
+            }
+        }
         
         
         public bool MakeTest(int threshold)
@@ -117,8 +126,7 @@ namespace BoardGame
 
         public override string ToString()
         {
-            
-            return $"<color=\"{_color.Hex()}\">Budget:{Butget} - Trust:{Trust} - Views:{Views} - Workers:{Workers.Count} - Lineup{Lineup.Count}</color>";
+            return $"<color=\"{_color.Hex()}\">Budget:{Budget} - Trust:{Trust} - Views:{Views} - Workers:{Workers.Count} - Lineup{Lineup.Count}</color>";
         }
     }
 }

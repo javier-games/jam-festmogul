@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using Monogum.BricksBucket.Core;
+using Monogum.BricksBucket.Core.Collections;
+using UnityEngine;
 
 namespace BoardGame
 {
     public class Deck<T> where T : class
     {
-        private readonly Queue<T> _deck = new();
+        private SerializableQueue _deck = new();
         private readonly List<T> _draw = new();
         private readonly System.Comparison<T> _sortMethod;
 
@@ -17,13 +19,20 @@ namespace BoardGame
             System.Comparison<T> sortMethod = null)
         {
             _sortMethod = sortMethod;
-            
             for (var i = 0; i < deckLenght; i++)
             {
                 _draw.Add(factoryMethod.Invoke());
             }
             ReshuffleDeck();
         }
+        
+        public Deck(System.Comparison<T> sortMethod = null)
+        {
+            _sortMethod = sortMethod;
+            _deck = JsonUtility.FromJson<SerializableQueue>(FixedVenues);
+            ReshuffleDeck();
+        }
+        
 
         public T Get(System.Func<T, bool> condition = null)
         {
@@ -79,5 +88,211 @@ namespace BoardGame
             }
             _draw.Clear();
         }
+    
+        private class SerializableQueue : SerializableQueue<T> { }
+        
+        
+        private const string FixedVenues = @"
+{
+    ""values"":
+    [
+      {
+         ""level"":0,
+         ""cost"":1,
+         ""service"":3,
+         ""placesQuota"":0,
+         ""seasonForBonus"":0,
+         ""interestBonus"":1
+      },
+      {
+         ""level"":0,
+         ""cost"":1,
+         ""service"":3,
+         ""placesQuota"":0,
+         ""seasonForBonus"":1,
+         ""interestBonus"":1
+      },
+      {
+         ""level"":0,
+         ""cost"":1,
+         ""service"":3,
+         ""placesQuota"":0,
+         ""seasonForBonus"":2,
+         ""interestBonus"":1
+      },
+      {
+         ""level"":0,
+         ""cost"":1,
+         ""service"":3,
+         ""placesQuota"":0,
+         ""seasonForBonus"":3,
+         ""interestBonus"":1
+      },
+      {
+         ""level"":0,
+         ""cost"":2,
+         ""service"":0,
+         ""placesQuota"":2,
+         ""seasonForBonus"":0,
+         ""interestBonus"":1
+      },
+      {
+         ""level"":0,
+         ""cost"":2,
+         ""service"":0,
+         ""placesQuota"":2,
+         ""seasonForBonus"":1,
+         ""interestBonus"":1
+      },
+      {
+         ""level"":0,
+         ""cost"":2,
+         ""service"":0,
+         ""placesQuota"":2,
+         ""seasonForBonus"":2,
+         ""interestBonus"":1
+      },
+      {
+         ""level"":0,
+         ""cost"":2,
+         ""service"":0,
+         ""placesQuota"":2,
+         ""seasonForBonus"":3,
+         ""interestBonus"":1
+      },
+      {
+         ""level"":1,
+         ""cost"":3,
+         ""service"":3,
+         ""placesQuota"":0,
+         ""seasonForBonus"":0,
+         ""interestBonus"":1
+      },
+      {
+         ""level"":1,
+         ""cost"":3,
+         ""service"":3,
+         ""placesQuota"":0,
+         ""seasonForBonus"":1,
+         ""interestBonus"":1
+      },
+      {
+         ""level"":1,
+         ""cost"":3,
+         ""service"":3,
+         ""placesQuota"":0,
+         ""seasonForBonus"":2,
+         ""interestBonus"":1
+      },
+      {
+         ""level"":1,
+         ""cost"":3,
+         ""service"":3,
+         ""placesQuota"":0,
+         ""seasonForBonus"":3,
+         ""interestBonus"":1
+      },
+      {
+         ""level"":1,
+         ""cost"":4,
+         ""service"":0,
+         ""placesQuota"":2,
+         ""seasonForBonus"":0,
+         ""interestBonus"":2
+      },
+      {
+         ""level"":1,
+         ""cost"":5,
+         ""service"":3,
+         ""placesQuota"":1,
+         ""seasonForBonus"":1,
+         ""interestBonus"":1
+      },
+      {
+         ""level"":1,
+         ""cost"":4,
+         ""service"":0,
+         ""placesQuota"":2,
+         ""seasonForBonus"":2,
+         ""interestBonus"":2
+      },
+      {
+         ""level"":1,
+         ""cost"":5,
+         ""service"":3,
+         ""placesQuota"":1,
+         ""seasonForBonus"":3,
+         ""interestBonus"":2
+      },
+      {
+         ""level"":2,
+         ""cost"":6,
+         ""service"":0,
+         ""placesQuota"":1,
+         ""seasonForBonus"":0,
+         ""interestBonus"":2
+      },
+      {
+         ""level"":2,
+         ""cost"":6,
+         ""service"":0,
+         ""placesQuota"":1,
+         ""seasonForBonus"":1,
+         ""interestBonus"":2
+      },
+      {
+         ""level"":2,
+         ""cost"":6,
+         ""service"":0,
+         ""placesQuota"":1,
+         ""seasonForBonus"":2,
+         ""interestBonus"":2
+      },
+      {
+         ""level"":2,
+         ""cost"":6,
+         ""service"":0,
+         ""placesQuota"":1,
+         ""seasonForBonus"":3,
+         ""interestBonus"":2
+      },
+
+      {
+         ""level"":2,
+         ""cost"":8,
+         ""service"":6,
+         ""placesQuota"":0,
+         ""seasonForBonus"":0,
+         ""interestBonus"":2
+      },
+      {
+         ""level"":2,
+         ""cost"":7,
+         ""service"":3,
+         ""placesQuota"":0,
+         ""seasonForBonus"":1,
+         ""interestBonus"":2
+      },
+      {
+         ""level"":2,
+         ""cost"":8,
+         ""service"":6,
+         ""placesQuota"":0,
+         ""seasonForBonus"":2,
+         ""interestBonus"":2
+      },
+      {
+         ""level"":2,
+         ""cost"":7,
+         ""service"":3,
+         ""placesQuota"":1,
+         ""seasonForBonus"":3,
+         ""interestBonus"":2
+      }
+   ]
+}
+
+";
     }
+
 }

@@ -220,4 +220,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1d8046613ab649e6a8d73fdd3e37e62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  delay: 0
+  delay: 1
+  venuesJson: {fileID: 4900000, guid: b5580f51438654616b6298929c488243, type: 3}

@@ -1,16 +1,14 @@
-using System;
-using Random = UnityEngine.Random;
-
 namespace BoardGame
 {
+    [System.Serializable]
     public class Venue
     {
-        public int Level;
-        public int Cost;
-        public Season SeasonForBonus;
-        public int Service;
-        public int InterestBonus;
-        public int PlacesQuota;
+        public int level;
+        public int cost;
+        public Season seasonForBonus;
+        public int service;
+        public int interestBonus;
+        public int placesQuota;
 
         public static Venue GetRandomVenue()
         {
@@ -22,15 +20,15 @@ namespace BoardGame
             
             var venue = new Venue
             {
-                Level = level,
-                SeasonForBonus = (Season) random.Next(4),
-                Cost = random.Next(min.Cost, max.Cost),
-                Service = random.Next(min.Service, max.Service),
-                PlacesQuota = random.Next(
+                level = level,
+                seasonForBonus = (Season) random.Next(4),
+                cost = random.Next(min.cost, max.cost),
+                service = random.Next(min.service, max.service),
+                placesQuota = random.Next(
                     1, 
                     GameDefinitions.MaxWorkersPerPlayer + 1
                 ),
-                InterestBonus = random.Next(
+                interestBonus = random.Next(
                     GameDefinitions.VenuesBonusRange.x,
                     GameDefinitions.VenuesBonusRange.y
                 )

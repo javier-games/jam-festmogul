@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace BoardGame
+﻿namespace BoardGame
 {
     public class VenueAcquisition : Job
     {
@@ -8,7 +6,7 @@ namespace BoardGame
 
         protected override int PlayersQuota => 1;
 
-        protected override int PlacesQuota => _venue?.PlacesQuota ?? 0;
+        protected override int PlacesQuota => _venue?.placesQuota ?? 0;
 
         protected override int PlacesPerPlayerQuota => PlacesQuota;
 
@@ -24,17 +22,17 @@ namespace BoardGame
 
         protected override bool CanExchangePerPlayer(Player player) => 
             _venue != null
-            && player.Butget >= _venue.Cost;
+            && player.Budget >= _venue.cost;
         
         protected override void ExchangePerPlayer(Player player)
         {
             if (_venue == null || player == null) { return; }
             
-            player.Butget -= _venue.Cost;
+            player.Pay((uint) _venue.cost);
             var interest = player.Interest;
-            if (Game.CurrentSeason == _venue.SeasonForBonus)
+            if (Game.CurrentSeason == _venue.seasonForBonus)
             {
-                interest += _venue.InterestBonus;
+                interest += _venue.interestBonus;
             }
             
             var attendantsSuccess = 0;
@@ -46,11 +44,10 @@ namespace BoardGame
                 }
             }
 
-            player.Butget += attendantsSuccess 
-                             * GameDefinitions.MoneyPerEachAttendant;
+            player.Receive( (uint) attendantsSuccess * GameDefinitions.MoneyPerEachAttendant);
 
             var trust = 0;
-            var totalService = _venue.Service + GetWorkers(player);
+            var totalService = _venue.service + (GetWorkers(player) * GameDefinitions.ServicePerWorker);
             for (var i = 0; i < attendantsSuccess; i++)
             {
                 if (player.MakeTest(totalService))
@@ -59,7 +56,7 @@ namespace BoardGame
                 }
             }
 
-            player.Trust += trust;
+            player.IncreaseTrust(trust);
             player.ClearViews();
             player.ReleaseTalent(); 
             Game.VenuesDeck.Return(_venue);

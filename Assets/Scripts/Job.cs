@@ -29,7 +29,7 @@ namespace BoardGame
         
         public void PlaceWorker(Player player)
         {
-            if (player.CurrentWorkerCount == 0) { return; }
+            if (player.WorkersAmount == 0) { return; }
             if (!HasVacancy(player)) { return; }
 
             if (!_quota.ContainsKey(player))

@@ -1,10 +1,11 @@
 namespace BoardGame
 {
+    [System.Serializable]
     public class Talent
     {
-        public int Level;
-        public int Cost;
-        public int Interest;
+        public int level;
+        public int cost;
+        public int interest;
         
         public static Talent GetRandomTalent()
         {
@@ -16,9 +17,9 @@ namespace BoardGame
             
             var talent = new Talent
             {
-                Level = level,
-                Cost = random.Next(min.Cost, max.Cost),
-                Interest = random.Next(min.Interest, max.Interest)
+                level = level,
+                cost = random.Next(min.cost, max.cost),
+                interest = random.Next(min.interest, max.interest)
             };
 
             return talent;

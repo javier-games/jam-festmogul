@@ -16,12 +16,12 @@ namespace BoardGame
         protected override void ExchangePerPlayer(Player player) { }
         
         protected override bool CanExchangePerWorker(Player player) => 
-            player.Butget >= GameDefinitions.MarketingCost 
+            player.Budget >= GameDefinitions.MarketingCost 
             && player.CanAcquireViews();
 
         protected override void ExchangePerWorker(Player player)
         {
-            player.Butget -= GameDefinitions.MarketingCost;
+            player.Pay(GameDefinitions.MarketingCost);
             player.AddViews(GameDefinitions.MarketingPayback);
         }
     }

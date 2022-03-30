@@ -18,6 +18,6 @@ namespace BoardGame
         protected override void ExchangePerPlayer(Player player) { }
 
         protected override void ExchangePerWorker(Player player) => 
-            player.Butget += GameDefinitions.InvestmentPayback;
+            player.Receive(GameDefinitions.InvestmentPayback);
     }
 }

@@ -7,8 +7,10 @@ namespace BoardGame
 
         public const int MinPlayers = 4;
         public const int MaxPlayers = 4;
+        
         public const int MinWorkersPerPlayer = 1;
         public const int MaxWorkersPerPlayer = 6;
+        
         public const int InitialBudget = 12;
         public const int MaxViews = 6;
 
@@ -17,19 +19,18 @@ namespace BoardGame
         public const int VenuesSlots = 3;
         
         public const int VenuesDeckCount = 20;
-
-        public static readonly Vector2Int VenuesBonusRange = 
-            new(1, 3);
-        
+        public static readonly Vector2Int VenuesBonusRange = new(1, 3);
         public static readonly Venue[] VenuesLevels = 
         {
-            new() {Cost = 1, Service = 1},
-            new() {Cost = 2, Service = 1},
-            new() {Cost = 4, Service = 2},
-            new() {Cost = 8, Service = 2},
-            new() {Cost = 16, Service = 3}
+            new() {cost = 1, service = 1},
+            new() {cost = 2, service = 1},
+            new() {cost = 4, service = 2},
+            new() {cost = 8, service = 2},
+            new() {cost = 16, service = 3}
         };
 
+        public const int ServicePerWorker = 3;
+        
         #endregion
 
         #region Talent
@@ -43,12 +44,11 @@ namespace BoardGame
         
         public const int TalentDeckCount = 20;
         public const int TalentPerPlayer = 3;
-        
         public static readonly Talent[] TalentLevels =
         {
-            new () {Cost = 3, Interest = 1},
-            new () {Cost = 6, Interest = 2},
-            new () {Cost = 9, Interest = 3}
+            new () {cost = 3, interest = 1},
+            new () {cost = 6, interest = 2},
+            new () {cost = 9, interest = 3}
         };
 
         #endregion

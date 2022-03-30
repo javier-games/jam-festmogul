@@ -11,10 +11,11 @@ namespace BoardGame
         [SerializeField] 
         private float delay;
 
+        [SerializeField]
+        private TextAsset venuesJson;
+
         internal static readonly Deck<Venue> VenuesDeck = new(
-            Venue.GetRandomVenue,
-            GameDefinitions.VenuesDeckCount,
-            (a, b) => a.Level.CompareTo(b.Level)
+            (a, b) => a.level.CompareTo(b.level)
         );
         
         internal static readonly Deck<Talent> TalentDeck = new(
@@ -124,7 +125,7 @@ namespace BoardGame
             {
                 var player = Players[playerOnTurn];
                 
-                while (player.CurrentWorkerCount > 0)
+                while (player.WorkersAmount > 0)
                 {
                     var jobKind = Random.Range(0, Jobs.Count);
                     var jobIndex = Random.Range(0, Jobs[jobKind].Count);
