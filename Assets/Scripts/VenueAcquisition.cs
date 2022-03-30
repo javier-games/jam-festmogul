@@ -1,4 +1,6 @@
-﻿namespace BoardGame
+﻿using UnityEngine;
+
+namespace BoardGame
 {
     public class VenueAcquisition : Job
     {
@@ -12,29 +14,23 @@
 
         public override void Prepare()
         {
+            if (_venue != null) { return; }
             _venue = Game.VenuesDeck.Get();
         }
 
-        protected override bool CanBeChargedPerWorker(Player player) => false;
+        protected override bool CanExchangePerWorker(Player player) => false;
 
-        protected override void ChargePerWorker(Player player){ }
-        
-        protected override void PaybackPerWorker(Player player){ }
-        
-        protected override bool CanBeChargedPerPlayer(Player player) => 
+        protected override void ExchangePerWorker(Player player){ }
+
+        protected override bool CanExchangePerPlayer(Player player) => 
             _venue != null
             && player.Butget >= _venue.Cost;
         
-        protected override void ChargePerPlayer(Player player)
+        protected override void ExchangePerPlayer(Player player)
         {
             if (_venue == null || player == null) { return; }
+            
             player.Butget -= _venue.Cost;
-        }
-
-        protected override void PaybackPerPlayer(Player player)
-        {
-            if (_venue == null || player == null) { return; }
-
             var interest = player.Interest;
             if (Game.CurrentSeason == _venue.SeasonForBonus)
             {
@@ -54,7 +50,7 @@
                              * GameDefinitions.MoneyPerEachAttendant;
 
             var trust = 0;
-            var totalService = _venue.Service + GetWorkers(player) - 1;
+            var totalService = _venue.Service + GetWorkers(player);
             for (var i = 0; i < attendantsSuccess; i++)
             {
                 if (player.MakeTest(totalService))
@@ -65,7 +61,9 @@
 
             player.Trust += trust;
             player.ClearViews();
-            player.ReleaseTalent();
+            player.ReleaseTalent(); 
+            Game.VenuesDeck.Return(_venue);
+            _venue = null;
         }
     }
 }

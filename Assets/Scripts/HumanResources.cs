@@ -10,20 +10,14 @@ namespace BoardGame
             GameDefinitions.HumanResourcesPlacesPerPlayerQuota;
         public override void Prepare() { }
 
-        protected override bool CanBeChargedPerPlayer(Player player) => true;
+        protected override bool CanExchangePerPlayer(Player player) => true;
 
-        protected override bool CanBeChargedPerWorker(Player player) => 
+        protected override bool CanExchangePerWorker(Player player) => 
             player.CanAcquireWorker();
 
-        protected override void ChargePerPlayer(Player player) { }
+        protected override void ExchangePerPlayer(Player player) { }
 
-        protected override void ChargePerWorker(Player player) { }
-
-        protected override void PaybackPerWorker(Player player)
-        {
+        protected override void ExchangePerWorker(Player player) => 
             player.AddWorker();
-        }
-
-        protected override void PaybackPerPlayer(Player player) { }
     }
 }

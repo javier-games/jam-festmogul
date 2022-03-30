@@ -8,7 +8,8 @@ namespace BoardGame
 {
     public class Game : MonoBehaviour
     {
-        [SerializeField] private float delay;
+        [SerializeField] 
+        private float delay;
 
         internal static readonly Deck<Venue> VenuesDeck = new(
             Venue.GetRandomVenue,
@@ -21,25 +22,26 @@ namespace BoardGame
             GameDefinitions.TalentDeckCount
         );
 
-        private static readonly List<Job> Jobs = new();
-        private static readonly List<Player> Players = new();
-        private static int _firstPlayer;
-        private static Season _firstSeason;
         public static Season CurrentSeason;
-        private static int _yearsCount;
+        
+        private List<List<Job>> Jobs = new();
+        private List<Player> Players = new();
+        private int _firstPlayer;
+        private Season _firstSeason;
+        private int _yearsCount;
 
         public IEnumerator Start()
         {
             SetUp();
             var i = 0;
-            while (true)
+            while (VenuesDeck.CardsAmount > 0)
             {
-                Debug.Log($"{i} -------");
+                Debug.Log($"Round {i}");
+                Debug.Log($"Year {_yearsCount} - Season {CurrentSeason}");
                 yield return new WaitForSeconds(delay);
             
                 Round();
             
-                Debug.Log($"Year {_yearsCount} - Season {CurrentSeason}");
                 foreach (var player in Players)
                 {
                     Debug.Log(player);
@@ -47,10 +49,12 @@ namespace BoardGame
 
                 i++;
             }
+            
+            Debug.Log($"Total Round {i}");
         }
 
 
-        private static void SetUp()
+        private void SetUp()
         {
             // Seasons.
             
@@ -74,67 +78,88 @@ namespace BoardGame
             // Jobs
             
             Jobs.Clear();
+            Jobs.Add(new List<Job>());
             for (var i = 0; i < GameDefinitions.VenuesSlots; i++)
             {
-                Jobs.Add(new VenueAcquisition());
+                Jobs[0].Add(new VenueAcquisition());
             }
             
+            Jobs.Add(new List<Job>());
             for (var i = 0; i < GameDefinitions.TalentSlots.Length; i++)
             {
                 for (var j = 0; j < GameDefinitions.TalentSlots[i]; j++)
                 {
-                    Jobs.Add(new TalentAcquisition(i));
+                    Jobs[1].Add(new TalentAcquisition(i));
                 }
             }
             
-            Jobs.Add(new Marketing());
-            Jobs.Add(new HumanResources());
-            Jobs.Add(new InvestmentAcquisition());
+            Jobs.Add(new List<Job>());
+            Jobs[2].Add(new Marketing());
+            
+            Jobs.Add(new List<Job>());
+            Jobs[3].Add(new HumanResources());
+            
+            Jobs.Add(new List<Job>());
+            Jobs[4].Add(new InvestmentAcquisition());
         }
 
-        private static void Round()
+        private void Round()
         {
             // Check year.
             if (CurrentSeason == _firstSeason) { _yearsCount++; }
-            
+
             // Prepare.
-            foreach (var job in Jobs)
+            foreach (var jobCollection in Jobs)
             {
-                job.Prepare();
+                foreach (var job in jobCollection)
+                {
+                    job.Prepare();
+                }
             }
             
             // Place workers.
             var playerOnTurn = _firstPlayer;
+            
             for (var i = 0; i < Players.Count; i++)
             {
                 var player = Players[playerOnTurn];
-                var shuffleList = Jobs.GetSample(Jobs.Count, true);
-                for (var j = 0; j < shuffleList.Length && player.WorkersCount != 0 ; j++)
+                
+                while (player.CurrentWorkerCount > 0)
                 {
-                    var job = shuffleList[j];
-                    if (job.HasVacancy(player)) 
-                    { 
-                        job.PlaceWorker(player);
+                    var jobKind = Random.Range(0, Jobs.Count);
+                    var jobIndex = Random.Range(0, Jobs[jobKind].Count);
+                    var randomJob = Jobs[jobKind][jobIndex];
+                    
+                    if (randomJob.HasVacancy(player))
+                    {
+                        randomJob.PlaceWorker(player);
                     }
                 }
 
                 playerOnTurn++;
                 CheckIndex(ref playerOnTurn, 0, Players.Count -1);
             }
-            
+
             // Recollect
             playerOnTurn = _firstPlayer;
             for (var i = 0; i < Players.Count; i++)
             {
                 var player = Players[playerOnTurn];
-                foreach (var job in Jobs)
+                foreach (var jobKind in Jobs)
                 {
-                    job.RecollectWorkers(player);
+                    foreach (var job in jobKind)
+                    { 
+                        job.RecollectWorkers(player);
+                    }
                 }
-                //player.PayWorkers();
                 
                 playerOnTurn++;
                 CheckIndex(ref playerOnTurn, 0,  Players.Count -1);
+            }
+
+            foreach (var player in Players)
+            {
+                player.PayWorkers();
             }
 
             _firstPlayer--;

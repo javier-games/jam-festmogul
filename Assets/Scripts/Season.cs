@@ -2,9 +2,9 @@ namespace BoardGame
 {
     public enum Season
     {
+        Spring,
         Summer,
         Autumn,
-        Spring,
         Winter
     }
 }

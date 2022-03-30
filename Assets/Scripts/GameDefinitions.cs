@@ -5,8 +5,8 @@ namespace BoardGame
     public static class GameDefinitions
     {
 
-        public const int MinPlayers = 2;
-        public const int MaxPlayers = 6;
+        public const int MinPlayers = 4;
+        public const int MaxPlayers = 4;
         public const int MinWorkersPerPlayer = 1;
         public const int MaxWorkersPerPlayer = 6;
         public const int InitialBudget = 12;

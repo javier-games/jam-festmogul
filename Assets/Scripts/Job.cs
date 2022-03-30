@@ -11,48 +11,35 @@ namespace BoardGame
 
         private readonly Dictionary<Player, Stack<Worker>> _quota = new();
 
-        private int WorkersCount 
-            => _quota.Keys.Sum(player => _quota[player].Count);
+        private int WorkersCount => _quota.Keys.Sum(key => _quota[key].Count);
         
-        private int ActivePlayersCount => _quota.Keys.Count(registeredPlayer => 
-            _quota[registeredPlayer].Count > 0);
+        private int PlayersCount => _quota.Keys.Count(key => _quota[key].Count > 0);
 
         public bool HasVacancy(Player player)
         {
-            if (WorkersCount >= PlacesQuota)
-            {
-                return false;
-            }
-            
-            if (ActivePlayersCount >= PlayersQuota)
-            {
-                return false;
-            }
-
-            return !_quota.ContainsKey(player) 
-                   || _quota[player].Count < PlacesPerPlayerQuota;
+            if (WorkersCount >= PlacesQuota) { return false; }
+            if (PlayersCount >= PlayersQuota) { return false; }
+            return GetWorkers(player) < PlacesPerPlayerQuota;
         }
 
         public int GetWorkers(Player player)
         {
-            if (!_quota.ContainsKey(player))
-            {
-                return 0;
-            }
-
-            return _quota[player].Count;
+            return !_quota.ContainsKey(player) ? 0 : _quota[player].Count;
         }
         
         public void PlaceWorker(Player player)
         {
-            if (player.WorkersCount == 0) { return; }
+            if (player.CurrentWorkerCount == 0) { return; }
             if (!HasVacancy(player)) { return; }
 
             if (!_quota.ContainsKey(player))
             {
                 _quota.Add(player, new Stack<Worker>());
             }
-            _quota[player].Push(player.GetWorker());
+
+            var worker = player.GetWorker();
+            if (worker == null) { return; }
+            _quota[player].Push(worker);
         }
 
         public void RecollectWorkers(Player player)
@@ -68,7 +55,7 @@ namespace BoardGame
                 return;
             }
 
-            if (!CanBeChargedPerPlayer(player))
+            if (!CanExchangePerPlayer(player))
             {
                 foreach (var worker in _quota[player])
                 {
@@ -78,25 +65,21 @@ namespace BoardGame
                 return;
             }
             
-            ChargePerPlayer(player);
+            ExchangePerPlayer(player);
             foreach (var worker in _quota[player])
             {
                 player.ReturnWorker(worker);
-                if (!CanBeChargedPerWorker(player)) { continue; }
-                ChargePerWorker(player);
-                PaybackPerWorker(player);
+                if (!CanExchangePerWorker(player)) { continue; }
+                ExchangePerWorker(player);
             }
-            PaybackPerPlayer(player);
             
             _quota[player].Clear();
         }
         
         public abstract void Prepare();
-        protected abstract bool CanBeChargedPerPlayer(Player player);
-        protected abstract bool CanBeChargedPerWorker(Player player);
-        protected abstract void ChargePerPlayer(Player player);
-        protected abstract void ChargePerWorker(Player player);
-        protected abstract void PaybackPerWorker(Player player);
-        protected abstract void PaybackPerPlayer(Player player);
+        protected abstract bool CanExchangePerPlayer(Player player);
+        protected abstract bool CanExchangePerWorker(Player player);
+        protected abstract void ExchangePerPlayer(Player player);
+        protected abstract void ExchangePerWorker(Player player);
     }
 }

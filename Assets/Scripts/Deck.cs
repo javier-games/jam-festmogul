@@ -9,6 +9,8 @@ namespace BoardGame
         private readonly List<T> _draw = new();
         private readonly System.Comparison<T> _sortMethod;
 
+        public int CardsAmount => _deck.Count;
+
         public Deck(
             System.Func<T> factoryMethod,
             int deckLenght,
