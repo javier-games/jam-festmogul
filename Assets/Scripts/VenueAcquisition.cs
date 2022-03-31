@@ -9,7 +9,7 @@
         protected override int PlacesQuota =>
             _venue != null ? 1 + _venue.placesQuota : 0;
 
-        protected override int PlacesPerPlayerQuota => PlacesQuota;
+        public override int PlacesPerPlayerQuota => PlacesQuota;
 
         public override void Prepare()
         {

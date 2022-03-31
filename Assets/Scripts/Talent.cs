@@ -7,7 +7,7 @@ namespace BoardGame
         public int cost;
         public int interest;
         
-        public static Talent GetRandomTalent()
+        /*public static Talent GetRandomTalent()
         {
             var random = new System.Random();
             var maxLevel = GameDefinitions.TalentLevels.Length;
@@ -23,6 +23,6 @@ namespace BoardGame
             };
 
             return talent;
-        }
+        }*/
     }
 }

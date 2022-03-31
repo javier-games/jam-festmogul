@@ -1,0 +1,196 @@
+{
+   "values": [
+      {
+         "level": 0,
+         "cost": 15,
+         "service": 3,
+         "placesQuota": 0,
+         "seasonForBonus": 0,
+         "interestBonus": 1
+      },
+      {
+         "level": 0,
+         "cost": 15,
+         "service": 3,
+         "placesQuota": 0,
+         "seasonForBonus": 1,
+         "interestBonus": 1
+      },
+      {
+         "level": 0,
+         "cost": 15,
+         "service": 3,
+         "placesQuota": 0,
+         "seasonForBonus": 2,
+         "interestBonus": 1
+      },
+      {
+         "level": 0,
+         "cost": 15,
+         "service": 3,
+         "placesQuota": 0,
+         "seasonForBonus": 3,
+         "interestBonus": 1
+      },
+      {
+         "level": 0,
+         "cost": 20,
+         "service": 0,
+         "placesQuota": 2,
+         "seasonForBonus": 0,
+         "interestBonus": 1
+      },
+      {
+         "level": 0,
+         "cost": 20,
+         "service": 0,
+         "placesQuota": 2,
+         "seasonForBonus": 1,
+         "interestBonus": 1
+      },
+      {
+         "level": 0,
+         "cost": 20,
+         "service": 0,
+         "placesQuota": 2,
+         "seasonForBonus": 2,
+         "interestBonus": 1
+      },
+      {
+         "level": 0,
+         "cost": 20,
+         "service": 0,
+         "placesQuota": 2,
+         "seasonForBonus": 3,
+         "interestBonus": 1
+      },
+      {
+         "level": 1,
+         "cost": 40,
+         "service": 3,
+         "placesQuota": 0,
+         "seasonForBonus": 0,
+         "interestBonus": 1
+      },
+      {
+         "level": 1,
+         "cost": 40,
+         "service": 3,
+         "placesQuota": 0,
+         "seasonForBonus": 1,
+         "interestBonus": 1
+      },
+      {
+         "level": 1,
+         "cost": 40,
+         "service": 3,
+         "placesQuota": 0,
+         "seasonForBonus": 2,
+         "interestBonus": 1
+      },
+      {
+         "level": 1,
+         "cost": 40,
+         "service": 3,
+         "placesQuota": 0,
+         "seasonForBonus": 3,
+         "interestBonus": 1
+      },
+      {
+         "level": 1,
+         "cost": 50,
+         "service": 0,
+         "placesQuota": 2,
+         "seasonForBonus": 0,
+         "interestBonus": 2
+      },
+      {
+         "level": 1,
+         "cost": 50,
+         "service": 3,
+         "placesQuota": 1,
+         "seasonForBonus": 1,
+         "interestBonus": 1
+      },
+      {
+         "level": 1,
+         "cost": 50,
+         "service": 0,
+         "placesQuota": 2,
+         "seasonForBonus": 2,
+         "interestBonus": 2
+      },
+      {
+         "level": 1,
+         "cost": 50,
+         "service": 3,
+         "placesQuota": 1,
+         "seasonForBonus": 3,
+         "interestBonus": 2
+      },
+      {
+         "level": 2,
+         "cost": 80,
+         "service": 0,
+         "placesQuota": 1,
+         "seasonForBonus": 0,
+         "interestBonus": 2
+      },
+      {
+         "level": 2,
+         "cost": 60,
+         "service": 0,
+         "placesQuota": 1,
+         "seasonForBonus": 1,
+         "interestBonus": 2
+      },
+      {
+         "level": 2,
+         "cost": 80,
+         "service": 0,
+         "placesQuota": 1,
+         "seasonForBonus": 2,
+         "interestBonus": 2
+      },
+      {
+         "level": 2,
+         "cost": 60,
+         "service": 0,
+         "placesQuota": 1,
+         "seasonForBonus": 3,
+         "interestBonus": 2
+      },
+      {
+         "level": 2,
+         "cost": 70,
+         "service": 6,
+         "placesQuota": 0,
+         "seasonForBonus": 0,
+         "interestBonus": 2
+      },
+      {
+         "level": 2,
+         "cost": 70,
+         "service": 3,
+         "placesQuota": 0,
+         "seasonForBonus": 1,
+         "interestBonus": 2
+      },
+      {
+         "level": 2,
+         "cost": 100,
+         "service": 6,
+         "placesQuota": 0,
+         "seasonForBonus": 2,
+         "interestBonus": 2
+      },
+      {
+         "level": 2,
+         "cost": 100,
+         "service": 3,
+         "placesQuota": 1,
+         "seasonForBonus": 3,
+         "interestBonus": 2
+      }
+   ]
+}

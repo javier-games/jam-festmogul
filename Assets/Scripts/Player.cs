@@ -41,11 +41,13 @@ namespace BoardGame
             {
                 AddWorker();
             }
+
+            ClearViews();
         }
 
         public bool CanAcquireViews() => Views < GameDefinitions.MaxViews;
         public void AddViews(int views) => Views += views;
-        public void ClearViews() => Views = 0;
+        public void ClearViews() => Views = 1;
 
         public bool CanAcquireWorker() =>
             TotalWorkersAmount < GameDefinitions.MaxWorkersPerPlayer;

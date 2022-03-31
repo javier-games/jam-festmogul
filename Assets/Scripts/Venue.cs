@@ -10,6 +10,7 @@ namespace BoardGame
         public Season seasonForBonus;
         public int interestBonus;
 
+        /*
         public static Venue GetRandomVenue()
         {
             var random = new System.Random();
@@ -35,6 +36,6 @@ namespace BoardGame
             };
 
             return venue;
-        }
+        }*/
     }
 }

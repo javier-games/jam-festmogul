@@ -222,3 +222,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   delay: 0
   venuesJson: {fileID: 4900000, guid: b5580f51438654616b6298929c488243, type: 3}
+  talentJson: {fileID: 4900000, guid: 55a62084157a88343bff30490a5e63b1, type: 3}

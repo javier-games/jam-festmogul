@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace BoardGame
 {
     public class InvestmentAcquisition : Job
@@ -6,7 +8,7 @@ namespace BoardGame
             GameDefinitions.InvestmentPlayersQuota;
         protected override int PlacesQuota =>
             GameDefinitions.InvestmentPlacesQuota;
-        protected override int PlacesPerPlayerQuota =>
+        public override int PlacesPerPlayerQuota =>
             GameDefinitions.InvestmentPlacesPerPlayerQuota;
         
         public override void Prepare() { }

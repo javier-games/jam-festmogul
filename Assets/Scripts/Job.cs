@@ -7,7 +7,7 @@ namespace BoardGame
     {
         protected abstract int PlayersQuota { get; }
         protected abstract int PlacesQuota { get;  }
-        protected abstract int PlacesPerPlayerQuota { get; }
+        public abstract int PlacesPerPlayerQuota { get; }
 
         private readonly Dictionary<Player, Stack<Worker>> _quota = new();
 

@@ -6,7 +6,7 @@ namespace BoardGame
             GameDefinitions.MarketingPlayersQuota;
         protected override int PlacesQuota => 
             GameDefinitions.MarketingPlacesQuota;
-        protected override int PlacesPerPlayerQuota =>
+        public override int PlacesPerPlayerQuota =>
             GameDefinitions.MarketingPlacesPerPlayerQuota;
         
         public override void Prepare() { }

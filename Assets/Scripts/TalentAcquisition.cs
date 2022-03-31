@@ -14,7 +14,7 @@ namespace BoardGame
 
         protected override int PlacesQuota => _talent != null ? 1: 0;
 
-        protected override int PlacesPerPlayerQuota => PlacesQuota;
+        public override int PlacesPerPlayerQuota => PlacesQuota;
 
         public override void Prepare()
         {
@@ -24,6 +24,13 @@ namespace BoardGame
                 Game.Instance.TalentDeck.ReshuffleDeck();
             }
             _talent = Game.Instance.TalentDeck.Draw(talent => talent.level == _level);
+        }
+
+        public override bool HasVacancy(Player player)
+        {
+            return base.HasVacancy(player) 
+                   // TODO: Rule added for computer.
+                   && player.CanAcquireTalent();
         }
 
         protected override bool CanExchangePerWorker(Player player) => false;

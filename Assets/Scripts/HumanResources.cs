@@ -8,7 +8,7 @@ namespace BoardGame
             GameDefinitions.HumanResourcesPlayersQuota;
         protected override int PlacesQuota =>
             GameDefinitions.HumanResourcesPlacesQuota;
-        protected override int PlacesPerPlayerQuota =>
+        public override int PlacesPerPlayerQuota =>
             GameDefinitions.HumanResourcesPlacesPerPlayerQuota;
         public override void Prepare() { }
 
@@ -19,10 +19,7 @@ namespace BoardGame
 
         protected override void ExchangePerPlayer(Player player) { }
 
-        protected override void ExchangePerWorker(Player player)
-        {
-            Debug.Log("Should be added");
+        protected override void ExchangePerWorker(Player player) => 
             player.AddWorker();
-        }
     }
 }

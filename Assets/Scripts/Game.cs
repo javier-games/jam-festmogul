@@ -15,6 +15,8 @@ namespace BoardGame
 
         [SerializeField]
         private TextAsset venuesJson;
+        [SerializeField]
+        private TextAsset talentJson;
 
         public readonly Deck<Venue> VenuesDeck = new(
             (a, b) => a.level.CompareTo(b.level)
@@ -30,11 +32,14 @@ namespace BoardGame
         private Season _firstSeason;
         private int _yearsCount;
 
+        private Job inverstments;
+        private int maxMoney;
+
         public IEnumerator Start()
         {
             SetUp();
             var i = 0;
-            while (VenuesDeck.CardsAmount > 0)
+            while (VenuesDeck.CardsAmount > 0 && _yearsCount < 5)
             {
                 Debug.Log($"Round {i}");
                 Debug.Log($"Year {_yearsCount} - Season {CurrentSeason}");
@@ -47,6 +52,7 @@ namespace BoardGame
             }
             
             Debug.Log($"Total Round {i}");
+            Debug.Log($"Max Money = {maxMoney}");
         }
 
 
@@ -59,7 +65,8 @@ namespace BoardGame
             // GetDeck.
             VenuesDeck.AddCardsFromFile(venuesJson);
             //VenuesDeck.AddCardsFromFactory(Venue.GetRandomVenue, GameDefinitions.VenuesDeckCount);
-            TalentDeck.AddCardsFromFactory(Talent.GetRandomTalent, GameDefinitions.TalentDeckCount);
+            TalentDeck.AddCardsFromFile(talentJson);
+            //TalentDeck.AddCardsFromFactory(Talent.GetRandomTalent, GameDefinitions.TalentDeckCount);
 
             // Players Setup. 
             Players.Clear();
@@ -97,9 +104,10 @@ namespace BoardGame
             
             Jobs.Add(new List<Job>());
             Jobs[3].Add(new HumanResources());
-            
+
             Jobs.Add(new List<Job>());
-            Jobs[4].Add(new InvestmentAcquisition());
+            inverstments = new InvestmentAcquisition();
+            Jobs[4].Add(inverstments);
         }
 
         private void Round()
@@ -121,29 +129,55 @@ namespace BoardGame
             for (var i = 0; i < Players.Count; i++)
             {
                 var player = Players[playerOnTurn];
-                for (var j = 0; j < player.TotalWorkersAmount; j++)
+
+                // TODO: While Patch.
+                var attempts = 1000;
+                while (player.AvailableWorkersAmount > 0 && attempts > 0)
                 {
-                    var foundJob = false;
-                    Shuffle(Jobs);
-                    for (var k = 0; k < Jobs.Count && !foundJob; k++)
+                    attempts--;
+                    if (attempts == 0)
                     {
-                        for (int l = 0; l < Jobs[k].Count && !foundJob; l++)
+                        var availableWorkers = player.AvailableWorkersAmount;
+                        for (int j = 0; j < availableWorkers; j++)
+                        {
+                            Debug.Log(player.ColoredText($"Placed on {inverstments}"));
+                            inverstments.PlaceWorker(player);
+                        }
+                        break;
+                    }
+                    
+                    Shuffle(Jobs);
+                    for (var k = 0;
+                         k < Jobs.Count && player.AvailableWorkersAmount > 0;
+                         k++)
+                    {
+                        Shuffle(Jobs[k]);
+                        for (int l = 0;
+                             l < Jobs[k].Count &&
+                             player.AvailableWorkersAmount > 0;
+                             l++)
                         {
                             var randomJob = Jobs[k][l];
                             if (!randomJob.HasVacancy(player)) continue;
-                            
-                            Debug.Log(player.ColoredText($"Placed on {randomJob}"));
-                            randomJob.PlaceWorker(player);
-                            foundJob = true;
+
+                            var placesTaken =
+                                Random.Range(0, randomJob.PlacesPerPlayerQuota) + 1;
+
+                            for (int j = 0; j < placesTaken && player.AvailableWorkersAmount > 0; j++)
+                            {
+                                Debug.Log(player.ColoredText($"Placed on {randomJob}"));
+                                randomJob.PlaceWorker(player);
+                            }
                         }
                     }
                 }
-
+                
                 playerOnTurn++;
                 CheckIndex(ref playerOnTurn, 0, Players.Count -1);
             }
 
             // Recollect
+            var moneyInRound = 0;
             playerOnTurn = _firstPlayer;
             for (var i = 0; i < Players.Count; i++)
             {
@@ -157,9 +191,15 @@ namespace BoardGame
                 }
                 player.PayWorkers();
                 Debug.Log(player);
+                moneyInRound += player.Budget;
                 
                 playerOnTurn++;
                 CheckIndex(ref playerOnTurn, 0,  Players.Count -1);
+            }
+
+            if (moneyInRound > maxMoney)
+            {
+                maxMoney = moneyInRound;
             }
 
 

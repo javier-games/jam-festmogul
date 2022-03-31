@@ -1,0 +1,79 @@
+{
+   "values": [
+      {
+         "level": 0,
+         "cost": 5,
+         "interest": 1
+      },
+      {
+         "level": 0,
+         "cost": 5,
+         "interest": 1
+      },
+      {
+         "level": 0,
+         "cost": 10,
+         "interest": 1
+      },
+      {
+         "level": 0,
+         "cost": 10,
+         "interest": 1
+      },
+      {
+         "level": 0,
+         "cost": 10,
+         "interest": 1
+      },
+      {
+         "level": 1,
+         "cost": 10,
+         "interest": 2
+      },
+      {
+         "level": 1,
+         "cost": 15,
+         "interest": 2
+      },
+      {
+         "level": 1,
+         "cost": 15,
+         "interest": 2
+      },
+      {
+         "level": 1,
+         "cost": 20,
+         "interest": 2
+      },
+      {
+         "level": 1,
+         "cost":20,
+         "interest": 2
+      },
+      {
+         "level": 2,
+         "cost": 30,
+         "interest": 3
+      },
+      {
+         "level": 2,
+         "cost": 40,
+         "interest": 3
+      },
+      {
+         "level": 2,
+         "cost": 40,
+         "interest": 3
+      },
+      {
+         "level": 2,
+         "cost": 50,
+         "interest": 3
+      },
+      {
+         "level": 2,
+         "cost": 50,
+         "interest": 3
+      }
+   ]
+}
