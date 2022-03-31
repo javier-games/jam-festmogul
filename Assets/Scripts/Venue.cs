@@ -5,10 +5,10 @@ namespace BoardGame
     {
         public int level;
         public int cost;
-        public Season seasonForBonus;
         public int service;
-        public int interestBonus;
         public int placesQuota;
+        public Season seasonForBonus;
+        public int interestBonus;
 
         public static Venue GetRandomVenue()
         {

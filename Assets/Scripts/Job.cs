@@ -15,7 +15,7 @@ namespace BoardGame
         
         private int PlayersCount => _quota.Keys.Count(key => _quota[key].Count > 0);
 
-        public bool HasVacancy(Player player)
+        public virtual bool HasVacancy(Player player)
         {
             if (WorkersCount >= PlacesQuota) { return false; }
             if (PlayersCount >= PlayersQuota) { return false; }
@@ -29,7 +29,7 @@ namespace BoardGame
         
         public void PlaceWorker(Player player)
         {
-            if (player.WorkersAmount == 0) { return; }
+            if (player.AvailableWorkersAmount == 0) { return; }
             if (!HasVacancy(player)) { return; }
 
             if (!_quota.ContainsKey(player))

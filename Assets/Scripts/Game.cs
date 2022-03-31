@@ -1,12 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using Monogum.BricksBucket.Core;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace BoardGame
 {
-    public class Game : MonoBehaviour
+    public class Game : MonoSingleton<Game>
     {
         [SerializeField] 
         private float delay;
@@ -14,14 +16,11 @@ namespace BoardGame
         [SerializeField]
         private TextAsset venuesJson;
 
-        internal static readonly Deck<Venue> VenuesDeck = new(
+        public readonly Deck<Venue> VenuesDeck = new(
             (a, b) => a.level.CompareTo(b.level)
         );
         
-        internal static readonly Deck<Talent> TalentDeck = new(
-            Talent.GetRandomTalent,
-            GameDefinitions.TalentDeckCount
-        );
+        public readonly Deck<Talent> TalentDeck = new();
 
         public static Season CurrentSeason;
         
@@ -39,15 +38,11 @@ namespace BoardGame
             {
                 Debug.Log($"Round {i}");
                 Debug.Log($"Year {_yearsCount} - Season {CurrentSeason}");
+                Debug.Log($"Venues Deck {VenuesDeck.CardsAmount}");
+                Debug.Log($"Talend Deck {TalentDeck.CardsAmount}");
+                
                 yield return new WaitForSeconds(delay);
-            
                 Round();
-            
-                foreach (var player in Players)
-                {
-                    Debug.Log(player);
-                }
-
                 i++;
             }
             
@@ -58,12 +53,15 @@ namespace BoardGame
         private void SetUp()
         {
             // Seasons.
-            
             _firstSeason = (Season) Random.Range(0, 4);
             CurrentSeason = _firstSeason;
             
+            // GetDeck.
+            VenuesDeck.AddCardsFromFile(venuesJson);
+            //VenuesDeck.AddCardsFromFactory(Venue.GetRandomVenue, GameDefinitions.VenuesDeckCount);
+            TalentDeck.AddCardsFromFactory(Talent.GetRandomTalent, GameDefinitions.TalentDeckCount);
+
             // Players Setup. 
-            
             Players.Clear();
             var playersCount = Random.Range(
                 GameDefinitions.MinPlayers,
@@ -120,20 +118,24 @@ namespace BoardGame
             
             // Place workers.
             var playerOnTurn = _firstPlayer;
-            
             for (var i = 0; i < Players.Count; i++)
             {
                 var player = Players[playerOnTurn];
-                
-                while (player.WorkersAmount > 0)
+                for (var j = 0; j < player.TotalWorkersAmount; j++)
                 {
-                    var jobKind = Random.Range(0, Jobs.Count);
-                    var jobIndex = Random.Range(0, Jobs[jobKind].Count);
-                    var randomJob = Jobs[jobKind][jobIndex];
-                    
-                    if (randomJob.HasVacancy(player))
+                    var foundJob = false;
+                    Shuffle(Jobs);
+                    for (var k = 0; k < Jobs.Count && !foundJob; k++)
                     {
-                        randomJob.PlaceWorker(player);
+                        for (int l = 0; l < Jobs[k].Count && !foundJob; l++)
+                        {
+                            var randomJob = Jobs[k][l];
+                            if (!randomJob.HasVacancy(player)) continue;
+                            
+                            Debug.Log(player.ColoredText($"Placed on {randomJob}"));
+                            randomJob.PlaceWorker(player);
+                            foundJob = true;
+                        }
                     }
                 }
 
@@ -153,15 +155,13 @@ namespace BoardGame
                         job.RecollectWorkers(player);
                     }
                 }
+                player.PayWorkers();
+                Debug.Log(player);
                 
                 playerOnTurn++;
                 CheckIndex(ref playerOnTurn, 0,  Players.Count -1);
             }
 
-            foreach (var player in Players)
-            {
-                player.PayWorkers();
-            }
 
             _firstPlayer--;
             CheckIndex(ref _firstPlayer, 0, Players.Count -1);
@@ -183,6 +183,28 @@ namespace BoardGame
             {
                 index = min;
             }
+        }
+        
+        public static void Shuffle<T>(IList<T> list)
+        {
+            int n = list.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = ThreadSafeRandom.ThisThreadsRandom.Next(n + 1);
+                T value = list[k];
+                list[k] = list[n];
+                list[n] = value;
+            }
+        }
+    }
+    public static class ThreadSafeRandom
+    {
+        [ThreadStatic] private static System.Random Local;
+
+        public static System.Random ThisThreadsRandom
+        {
+            get { return Local ?? (Local = new System.Random(unchecked(Environment.TickCount * 31 + Thread.CurrentThread.ManagedThreadId))); }
         }
     }
 }

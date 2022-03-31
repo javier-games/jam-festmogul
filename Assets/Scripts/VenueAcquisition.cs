@@ -6,14 +6,22 @@
 
         protected override int PlayersQuota => 1;
 
-        protected override int PlacesQuota => _venue?.placesQuota ?? 0;
+        protected override int PlacesQuota =>
+            _venue != null ? 1 + _venue.placesQuota : 0;
 
         protected override int PlacesPerPlayerQuota => PlacesQuota;
 
         public override void Prepare()
         {
             if (_venue != null) { return; }
-            _venue = Game.VenuesDeck.Get();
+            _venue = Game.Instance.VenuesDeck.Draw();
+        }
+
+        public override bool HasVacancy(Player player)
+        {
+            return base.HasVacancy(player)
+                   // TODO: Rule added just for computer.
+                   && player.Interest > 0 && player.Views > 0;
         }
 
         protected override bool CanExchangePerWorker(Player player) => false;
@@ -59,7 +67,7 @@
             player.IncreaseTrust(trust);
             player.ClearViews();
             player.ReleaseTalent(); 
-            Game.VenuesDeck.Return(_venue);
+            Game.Instance.VenuesDeck.Withdraw(_venue);
             _venue = null;
         }
     }

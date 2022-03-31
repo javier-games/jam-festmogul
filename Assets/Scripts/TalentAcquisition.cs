@@ -19,7 +19,11 @@ namespace BoardGame
         public override void Prepare()
         {
             if (_talent != null) return;
-            _talent = Game.TalentDeck.Get(talent => talent.level == _level);
+            if (Game.Instance.TalentDeck.CardsAmount <= 0)
+            {
+                Game.Instance.TalentDeck.ReshuffleDeck();
+            }
+            _talent = Game.Instance.TalentDeck.Draw(talent => talent.level == _level);
         }
 
         protected override bool CanExchangePerWorker(Player player) => false;

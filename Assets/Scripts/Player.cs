@@ -7,13 +7,14 @@ namespace BoardGame
     public class Player
     {
         private Stack<Worker> Workers { get; } = new();
-        private List<Worker> WorkersRegistry { get; } = new List<Worker>();
+        private List<Worker> WorkersRegistry { get; } = new();
         private Stack<Talent> Lineup { get; } = new();
 
         public int Budget { get; private set; }
         public int Trust { get; private set; }
         public int Views { get; private set; }
-        public int WorkersAmount => Workers.Count;
+        public int AvailableWorkersAmount => Workers.Count;
+        public int TotalWorkersAmount => WorkersRegistry.Count;
 
         private readonly Color _color;
 
@@ -47,7 +48,7 @@ namespace BoardGame
         public void ClearViews() => Views = 0;
 
         public bool CanAcquireWorker() =>
-            WorkersRegistry.Count < GameDefinitions.MaxWorkersPerPlayer;
+            TotalWorkersAmount < GameDefinitions.MaxWorkersPerPlayer;
 
         public void AddWorker()
         {
@@ -76,24 +77,24 @@ namespace BoardGame
         {
             foreach (var talent in Lineup)
             {
-                Game.TalentDeck.Return(talent);
+                Game.Instance.TalentDeck.Withdraw(talent);
             }
             Lineup.Clear();
         }
 
         public void PayWorkers()
         {
-            var total = WorkersRegistry.Count * GameDefinitions.CostPerWorker;
+            var total = TotalWorkersAmount * GameDefinitions.CostPerWorker;
             while (total > Budget)
             {
-                if (WorkersRegistry.Count <= GameDefinitions.MinWorkersPerPlayer)
+                if (TotalWorkersAmount <= GameDefinitions.MinWorkersPerPlayer)
                 {
                     // Working for free.
                     return;
                 }
                 var workerToDelete = Workers.Pop();
                 WorkersRegistry.Remove(workerToDelete);
-                total = WorkersRegistry.Count * GameDefinitions.CostPerWorker;
+                total = TotalWorkersAmount * GameDefinitions.CostPerWorker;
             }
             Budget-= total;
         }
@@ -117,16 +118,20 @@ namespace BoardGame
                 Budget = 0;
             }
         }
-        
-        
+
         public bool MakeTest(int threshold)
         {
             return Random.Range(1, 7) <= threshold;
         }
 
+        public string ColoredText(string text)
+        {
+            return $"<color=\"{_color.Hex()}\">{text}</color>";
+        }
+
         public override string ToString()
         {
-            return $"<color=\"{_color.Hex()}\">Budget:{Budget} - Trust:{Trust} - Views:{Views} - Workers:{Workers.Count} - Lineup{Lineup.Count}</color>";
+            return ColoredText($"Trust:{Trust} - Budget:{Budget} - Workers:{TotalWorkersAmount} - Lineup{Lineup.Count} - Views:{Views} - Interest {Interest}");
         }
     }
 }

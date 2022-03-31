@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace BoardGame
 {
     public class HumanResources : Job
@@ -17,7 +19,10 @@ namespace BoardGame
 
         protected override void ExchangePerPlayer(Player player) { }
 
-        protected override void ExchangePerWorker(Player player) => 
+        protected override void ExchangePerWorker(Player player)
+        {
+            Debug.Log("Should be added");
             player.AddWorker();
+        }
     }
 }

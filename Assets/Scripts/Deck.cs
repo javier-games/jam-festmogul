@@ -7,292 +7,110 @@ namespace BoardGame
 {
     public class Deck<T> where T : class
     {
-        private SerializableQueue _deck = new();
-        private readonly List<T> _draw = new();
+        private readonly SerializableQueue _availableDeck = new();
+        private readonly List<T> _discardedDeck = new();
         private readonly System.Comparison<T> _sortMethod;
 
-        public int CardsAmount => _deck.Count;
+        public int CardsAmount => _availableDeck.Count;
 
-        public Deck(
-            System.Func<T> factoryMethod,
-            int deckLenght,
-            System.Comparison<T> sortMethod = null)
-        {
-            _sortMethod = sortMethod;
-            for (var i = 0; i < deckLenght; i++)
-            {
-                _draw.Add(factoryMethod.Invoke());
-            }
-            ReshuffleDeck();
-        }
-        
         public Deck(System.Comparison<T> sortMethod = null)
         {
             _sortMethod = sortMethod;
-            _deck = JsonUtility.FromJson<SerializableQueue>(FixedVenues);
-            ReshuffleDeck();
         }
         
-
-        public T Get(System.Func<T, bool> condition = null)
+        public T Draw(System.Func<T, bool> condition = null)
         {
-            if (_deck.Count == 0)
+            if (_availableDeck.Count == 0)
             {
                 return null;
             }
             
             if (condition == null)
             {
-                return _deck.Dequeue();
+                return _availableDeck.Dequeue();
             }
 
-            for (var i = 0; i < _deck.Count; i++)
+            for (var i = 0; i < _availableDeck.Count; i++)
             {
-                var t = _deck.Dequeue();
+                var t = _availableDeck.Dequeue();
                 if (condition(t))
                 {
                     return t;
                 }
-                _deck.Enqueue(t);
+                _availableDeck.Enqueue(t);
             }
 
             return null;
         }
 
-        public void Return(T element)
+        public void Withdraw(T element)
         {
-            _draw.Add(element);
+            if (element == null) { return; }
+            _discardedDeck.Add(element);
+        }
+
+        public void AddCardsFromFile(TextAsset asset)
+        {
+            var text = asset ? asset.text : string.Empty;
+            if (string.IsNullOrEmpty(text))
+            {
+                Debug.LogWarning("Text null.");
+                return;
+            }
+            
+            var deck = JsonUtility.FromJson<SerializableQueue>(text);
+            if (deck == null)
+            {
+                Debug.LogWarning("Deck empty.");
+                return;
+            }
+
+            while (deck.Count > 0)
+            {
+                _availableDeck.Enqueue(deck.Dequeue());
+            }
+            
+            ReshuffleDeck();
+        }
+
+        public void AddCardsFromFactory(System.Func<T> factoryMethod, int deckLenght)
+        {
+            for (var i = 0; i < deckLenght; i++)
+            {
+                _availableDeck.Enqueue(factoryMethod.Invoke());
+            }
+            ReshuffleDeck();
+            Debug.Log(JsonUtility.ToJson(_availableDeck, true));
         }
 
         public void ReshuffleDeck()
         {
-            for (var i = 0; i < _deck.Count; i++)
+            while (_availableDeck.Count > 0)
             {
-                _draw.Add(_deck.Dequeue());
+                _discardedDeck.Add(_availableDeck.Dequeue());
             }
             
             var random = new System.Random();
-            for (int i = 0; i < _draw.Count; i++)
+            for (int i = 0; i < _discardedDeck.Count; i++)
             {
                 var r = random.Next(0, i);
-                _draw.Swap (i, r);
+                _discardedDeck.Swap (i, r);
             }
             if (_sortMethod != null)
             {
-                _draw.Sort(_sortMethod);
+                Debug.Log("sorted");
+                Debug.Log(_discardedDeck.Count);
+                _discardedDeck.Sort(_sortMethod);
             }
             
-            for (var i = 0; i < _draw.Count; i++)
+            for (var i = 0; i < _discardedDeck.Count; i++)
             {
-                _deck.Enqueue(_draw[i]);
+                _availableDeck.Enqueue(_discardedDeck[i]);
             }
-            _draw.Clear();
+            _discardedDeck.Clear();
         }
     
         private class SerializableQueue : SerializableQueue<T> { }
-        
-        
-        private const string FixedVenues = @"
-{
-    ""values"":
-    [
-      {
-         ""level"":0,
-         ""cost"":1,
-         ""service"":3,
-         ""placesQuota"":0,
-         ""seasonForBonus"":0,
-         ""interestBonus"":1
-      },
-      {
-         ""level"":0,
-         ""cost"":1,
-         ""service"":3,
-         ""placesQuota"":0,
-         ""seasonForBonus"":1,
-         ""interestBonus"":1
-      },
-      {
-         ""level"":0,
-         ""cost"":1,
-         ""service"":3,
-         ""placesQuota"":0,
-         ""seasonForBonus"":2,
-         ""interestBonus"":1
-      },
-      {
-         ""level"":0,
-         ""cost"":1,
-         ""service"":3,
-         ""placesQuota"":0,
-         ""seasonForBonus"":3,
-         ""interestBonus"":1
-      },
-      {
-         ""level"":0,
-         ""cost"":2,
-         ""service"":0,
-         ""placesQuota"":2,
-         ""seasonForBonus"":0,
-         ""interestBonus"":1
-      },
-      {
-         ""level"":0,
-         ""cost"":2,
-         ""service"":0,
-         ""placesQuota"":2,
-         ""seasonForBonus"":1,
-         ""interestBonus"":1
-      },
-      {
-         ""level"":0,
-         ""cost"":2,
-         ""service"":0,
-         ""placesQuota"":2,
-         ""seasonForBonus"":2,
-         ""interestBonus"":1
-      },
-      {
-         ""level"":0,
-         ""cost"":2,
-         ""service"":0,
-         ""placesQuota"":2,
-         ""seasonForBonus"":3,
-         ""interestBonus"":1
-      },
-      {
-         ""level"":1,
-         ""cost"":3,
-         ""service"":3,
-         ""placesQuota"":0,
-         ""seasonForBonus"":0,
-         ""interestBonus"":1
-      },
-      {
-         ""level"":1,
-         ""cost"":3,
-         ""service"":3,
-         ""placesQuota"":0,
-         ""seasonForBonus"":1,
-         ""interestBonus"":1
-      },
-      {
-         ""level"":1,
-         ""cost"":3,
-         ""service"":3,
-         ""placesQuota"":0,
-         ""seasonForBonus"":2,
-         ""interestBonus"":1
-      },
-      {
-         ""level"":1,
-         ""cost"":3,
-         ""service"":3,
-         ""placesQuota"":0,
-         ""seasonForBonus"":3,
-         ""interestBonus"":1
-      },
-      {
-         ""level"":1,
-         ""cost"":4,
-         ""service"":0,
-         ""placesQuota"":2,
-         ""seasonForBonus"":0,
-         ""interestBonus"":2
-      },
-      {
-         ""level"":1,
-         ""cost"":5,
-         ""service"":3,
-         ""placesQuota"":1,
-         ""seasonForBonus"":1,
-         ""interestBonus"":1
-      },
-      {
-         ""level"":1,
-         ""cost"":4,
-         ""service"":0,
-         ""placesQuota"":2,
-         ""seasonForBonus"":2,
-         ""interestBonus"":2
-      },
-      {
-         ""level"":1,
-         ""cost"":5,
-         ""service"":3,
-         ""placesQuota"":1,
-         ""seasonForBonus"":3,
-         ""interestBonus"":2
-      },
-      {
-         ""level"":2,
-         ""cost"":6,
-         ""service"":0,
-         ""placesQuota"":1,
-         ""seasonForBonus"":0,
-         ""interestBonus"":2
-      },
-      {
-         ""level"":2,
-         ""cost"":6,
-         ""service"":0,
-         ""placesQuota"":1,
-         ""seasonForBonus"":1,
-         ""interestBonus"":2
-      },
-      {
-         ""level"":2,
-         ""cost"":6,
-         ""service"":0,
-         ""placesQuota"":1,
-         ""seasonForBonus"":2,
-         ""interestBonus"":2
-      },
-      {
-         ""level"":2,
-         ""cost"":6,
-         ""service"":0,
-         ""placesQuota"":1,
-         ""seasonForBonus"":3,
-         ""interestBonus"":2
-      },
-
-      {
-         ""level"":2,
-         ""cost"":8,
-         ""service"":6,
-         ""placesQuota"":0,
-         ""seasonForBonus"":0,
-         ""interestBonus"":2
-      },
-      {
-         ""level"":2,
-         ""cost"":7,
-         ""service"":3,
-         ""placesQuota"":0,
-         ""seasonForBonus"":1,
-         ""interestBonus"":2
-      },
-      {
-         ""level"":2,
-         ""cost"":8,
-         ""service"":6,
-         ""placesQuota"":0,
-         ""seasonForBonus"":2,
-         ""interestBonus"":2
-      },
-      {
-         ""level"":2,
-         ""cost"":7,
-         ""service"":3,
-         ""placesQuota"":1,
-         ""seasonForBonus"":3,
-         ""interestBonus"":2
-      }
-   ]
-}
-
-";
     }
 
 }
